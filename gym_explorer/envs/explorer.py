@@ -39,9 +39,9 @@ class Explorer(gym.Env):
 
         for x,y in zip(*obj_pos):
             if np.all(self.initial_state[:,x,y] == PLAYER_COLOUR):
-                self.initial_player_position = np.array([y,x])
+                self.initial_player_position = np.array([x,y])
             elif np.all(self.initial_state[:,x,y] == GOAL_COLOUR):
-                self.initial_goal_position = np.array([y,x])
+                self.initial_goal_position = np.array([x,y])
 
 
         self.player_position = np.copy(self.initial_player_position)
@@ -62,7 +62,7 @@ class Explorer(gym.Env):
         self.action_space = gym.spaces.Discrete(self.physics.shape[0])
         self.mask = (self.state.sum(0) - 1) < 0 # wall mask 
 
-    def action_meanings(self):
+    def get_action_meanings(self):
         return ["NORTH", "EAST", "SOUTH", "WEST", "NOOP"]
 
     def step(self, action):
