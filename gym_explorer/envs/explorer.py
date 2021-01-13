@@ -18,7 +18,6 @@ from PIL import Image
 PLAYER_COLOUR = np.array([1.,0.,0.]) # RED
 GOAL_COLOUR = np.array([0.,0.,1.])   # BLUE
 
-
 class Explorer(gym.Env):
 
     def __init__(self, map, verbose=True):
@@ -33,6 +32,8 @@ class Explorer(gym.Env):
 
         self.state = np.copy(self.initial_state)
 
+        self.viewer = None # for rendering
+
         #assume RGB format
         obj_pos = np.where(self.initial_state.sum(axis=0) == 1)
         assert len(obj_pos[0]) <= 2 # too many players or goals...
@@ -42,7 +43,6 @@ class Explorer(gym.Env):
                 self.initial_player_position = np.array([x,y])
             elif np.all(self.initial_state[:,x,y] == GOAL_COLOUR):
                 self.initial_goal_position = np.array([x,y])
-
 
         self.player_position = np.copy(self.initial_player_position)
         self.goal_position = np.copy(self.initial_goal_position)
@@ -84,5 +84,29 @@ class Explorer(gym.Env):
         return np.copy(self.state)
 
     def render(self, *args, **kwargs):
-        pass
-        
+        if self.viewer is None: # first time setup
+           self.viewer = ExplorerViewer(*args, **kwargs)
+        self.viewer.render(self.state)
+
+class ExplorerViewer:
+
+    def __init__(self, display_size=(480,480)):
+        import pygame # ... if its not installed things wont be rendered
+        pygame.init()
+        self.display = pygame.display.set_mode(display_size)
+        self.display_size = np.array(display_size)
+        self.pygame = pygame # pygame module...
+
+    def render(self, state, *args, **kwargs):
+        state = (state.transpose(2,1,0) * 255) # HWC for pygame
+        surface = self.pygame.surfarray.make_surface(state)
+        surface = self.pygame.transform.scale(surface, self.display_size)
+        self.display.blit(surface, (0,0))
+        self.pygame.display.update()
+
+        # TODO also render action and reward? maybe also other meta info
+
+
+
+
+    
