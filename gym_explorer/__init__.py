@@ -37,5 +37,7 @@ except ModuleNotFoundError:
 for map in utils.maps():
     register(map)
 
+gym.envs.registration.register(id="explorer-v0", entry_point='gym_explorer.envs:Explorer')
+
 def environments():
     return [e for e in __ENVIRONMENTS__]

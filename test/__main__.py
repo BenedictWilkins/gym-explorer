@@ -15,7 +15,9 @@ import numpy as np
 
 environments = gym_explorer.environments()
 print(environments)
-env = gym_explorer.make(environments[0])
+#env = gym_explorer.make(environments[0])
+
+env = gym_explorer.make('explorer-v0', map="bottleneck2.png")
 
 for i in range(1000):
     env.step(np.random.randint(0,env.action_space.n))

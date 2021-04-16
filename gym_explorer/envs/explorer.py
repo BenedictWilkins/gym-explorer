@@ -30,7 +30,10 @@ LOGGER = logging.getLogger("gym-explorer")
 class Explorer(gym.Env):
 
     def __init__(self, map):
-        map = utils.search(map)
+        _map = utils.search(map)
+        if _map is None:
+            raise FileNotFoundError("Failed to find map file: {0}".format(map))
+        map = _map
 
         LOGGER.info("FOUND MAP FILE: ", map)
 
