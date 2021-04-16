@@ -14,33 +14,29 @@ import os
 def maps():
     path = os.path.split(__file__)[0] 
     path = os.path.join(path, 'maps')
-    files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path,f))]
+    files = [os.path.join(path, f) for f in os.listdir(path)] 
     return files
 
 def search(file):
-    """  
-        Find a map file.
-
+    """ Find a map file.
         Search order:
             absolute path (if applicable) 
             current working directory
             gym_exploers/maps/
-        
     Args:
         file (str): file name or path
 
     Returns:
         str: absolute file path
     """
-    if os.path.isfile(file):
-        return file
-
-    cwd = os.getcwd()
-    if file in os.listdir(cwd):
-        return os.path.join(cwd, file)
-
-    if file in maps():
-        path = os.path.split(__file__)[0] 
-        path = os.path.join(path, 'maps')
-        files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path,f))]
-        return os.path.join(path, file)
+    _file = os.path.abspath(file) # attempt to get the absolute path
+    if os.path.isfile(_file):
+        return _file
+    
+    # search default files
+    for default_file in maps():
+        _default_file = os.path.split(default_file)[1]
+        if file == _default_file:
+            return default_file
+    
+    return None # no file was found ...

@@ -9,7 +9,6 @@ __author__ = "Benedict Wilkins"
 __email__ = "benrjw@gmail.com"
 __status__ = "Development"
 
-
 from .explorer import Explorer
 
 __all__ = ('explorer', )

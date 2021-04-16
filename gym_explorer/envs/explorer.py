@@ -9,24 +9,30 @@ __author__ = "Benedict Wilkins"
 __email__ = "benrjw@gmail.com"
 __status__ = "Development"
 
-
-
 from .. import utils
 
 import gym
 import numpy as np
+import logging
+
 from PIL import Image
+
+try: 
+    from .. import view 
+except ModuleNotFoundError:
+    # pygame isnt installed, so we can't render
+    view = None
 
 PLAYER_COLOUR = np.array([1.,0.,0.]) # RED
 GOAL_COLOUR = np.array([0.,0.,1.])   # BLUE
+LOGGER = logging.getLogger("gym-explorer")
 
 class Explorer(gym.Env):
 
-    def __init__(self, map, verbose=True):
+    def __init__(self, map):
         map = utils.search(map)
 
-        if verbose:
-            print("FOUND MAP FILE: ", map)
+        LOGGER.info("FOUND MAP FILE: ", map)
 
         self.initial_state = np.array(Image.open(map), dtype=np.float32).transpose(2,0,1) / 255.
         self.initial_player_position = None 
@@ -54,10 +60,9 @@ class Explorer(gym.Env):
         if self.goal_position is None:
             raise ValueError("Failed to find goal position.")
        
-        if verbose:
-            print(" -- GRID SIZE:", self.initial_state.shape)
-            print(" -- PLAYER POSITION:", self.player_position)
-            print(" -- GOAL POSITION:", self.goal_position)
+        LOGGER.info(" -- GRID SIZE:", self.initial_state.shape)
+        LOGGER.info(" -- PLAYER POSITION:", self.player_position)
+        LOGGER.info(" -- GOAL POSITION:", self.goal_position)
 
         self.observation_space = gym.spaces.Box(np.float32(0), np.float32(1), shape=self.initial_state.shape, dtype=np.float32)
         self.physics = np.array([[-1,0],[0,1],[1,0],[0,-1],[0,0]], dtype=np.int64)
@@ -87,28 +92,7 @@ class Explorer(gym.Env):
 
     def render(self, *args, **kwargs):
         if self.viewer is None: # first time setup
-           self.viewer = ExplorerViewer(*args, **kwargs)
-        self.viewer.render(self.state)
-
-class ExplorerViewer:
-
-    def __init__(self, display_size=(480,480)):
-        import pygame # ... if its not installed things wont be rendered
-        pygame.init()
-        self.display = pygame.display.set_mode(display_size)
-        self.display_size = np.array(display_size)
-        self.pygame = pygame # pygame module...
-
-    def render(self, state, *args, **kwargs):
-        state = (state.transpose(2,1,0) * 255) # HWC for pygame
-        surface = self.pygame.surfarray.make_surface(state)
-        surface = self.pygame.transform.scale(surface, self.display_size)
-        self.display.blit(surface, (0,0))
-        self.pygame.display.update()
-
-        # TODO also render action and reward? maybe also other meta info
-
-
-
+            self.viewer = view.ExplorerViewer(*args, **kwargs)
+        self.viewer.render(self.state, *args, **kwargs)
 
     
