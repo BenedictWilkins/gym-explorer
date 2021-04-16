@@ -35,9 +35,16 @@ class Explorer(gym.Env):
             raise FileNotFoundError("Failed to find map file: {0}".format(map))
         map = _map
 
-        LOGGER.info("FOUND MAP FILE: ", map)
+        LOGGER.error("FOUND MAP FILE: {0}".format(map))
+        
+        image = Image.open(map)
+        if image.mode == "RGBA": # convert to RGB... 
+            _image = Image.new("RGB", image.size, (255, 255, 255))
+            _image.paste(image, mask = image.split()[3])
+            image = _image
 
-        self.initial_state = np.array(Image.open(map), dtype=np.float32).transpose(2,0,1) / 255.
+        self.initial_state = np.array(image, dtype=np.float32).transpose(2,0,1) / 255.
+
         self.initial_player_position = None 
         self.initial_goal_position = None
 
@@ -47,6 +54,10 @@ class Explorer(gym.Env):
 
         #assume RGB format
         obj_pos = np.where(self.initial_state.sum(axis=0) == 1)
+
+        LOGGER.error(self.initial_state.shape)
+        LOGGER.error(self.initial_state.sum(axis=0))
+
         assert len(obj_pos[0]) <= 2 # too many players or goals...
 
         for x,y in zip(*obj_pos):

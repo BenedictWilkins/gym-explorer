@@ -23,11 +23,6 @@ for i in range(1000):
     env.step(np.random.randint(0,env.action_space.n))
     env.render(wait=10)
 
-
-
-
-
-
 # LEGACY CODE (REMOVE SOON)
 """
 import h5py
