@@ -38,6 +38,8 @@ for map in utils.maps():
     register(map)
 
 gym.envs.registration.register(id="explorer-v0", entry_point='gym_explorer.envs:Explorer')
+gym.envs.registration.register(id="explorer-bugged-v0", entry_point='gym_explorer.envs:BugExplorer')
+
 
 def environments():
     return [e for e in __ENVIRONMENTS__]

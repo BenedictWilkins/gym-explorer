@@ -10,7 +10,7 @@ __email__ = "benrjw@gmail.com"
 __status__ = "Development"
 
 from .explorer import Explorer
-
-__all__ = ('explorer', )
+from .bugexplorer import BugExplorer
+__all__ = ('Explorer', 'BugExplorer')
 
 
